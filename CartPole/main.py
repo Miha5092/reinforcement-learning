@@ -12,12 +12,12 @@ action_size = env.action_space.n
 
 # Hyperparameters
 
-n_episodes = 1_000
-batch_size = 32
+n_episodes = 400
+batch_size = 64
 
 initial_epsilon = 1.0
 final_epsilon = 0.01
-epsilon_decay = 0.995
+epsilon_decay = 0.994
 gamma = 0.95
 learning_rate = 0.01
 
@@ -58,7 +58,7 @@ def main():
                 scores.append(score)
 
         # Once enough data is gathered, train the agent
-        if len(agent.memory) > batch_size:
+        if len(agent.state_memory) > batch_size:
             agent.replay(batch_size)
 
     env.close()
@@ -66,10 +66,15 @@ def main():
     # Save the model
     agent.model.save('model.h5')
 
-    # Plot the scores
-    plt.plot(scores)
+    window_size = 15  # Adjust this to your desired window size
+
+    # Calculate the moving average
+    moving_average = np.convolve(scores, np.ones(window_size)/window_size, mode='valid')
+
+    # Plot the moving average
+    plt.plot(moving_average)
     plt.xlabel('Episode')
-    plt.ylabel('Score')
+    plt.ylabel('Moving Average Score')
     plt.show()
 
 
