@@ -27,11 +27,12 @@ class DQNAgent:
         self.epsilon = initial_epsilon
         self.final_epsilon = final_epsilon
         self.epsilon_decay = epsilon_decay
+        self.episode = 0
 
         self.gamma = gamma
         self.learning_rate = learning_rate
 
-        self.memory_size = 5000
+        self.memory_size = 10_000
 
         self.state_memory = deque(maxlen=self.memory_size)
         self.action_memory = deque(maxlen=self.memory_size)
@@ -45,7 +46,6 @@ class DQNAgent:
         model = Sequential()
 
         model.add(Dense(32, input_dim=self.state_size, activation='relu'))
-        model.add(Dense(32, activation='relu'))
         model.add(Dense(32, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
 
@@ -85,7 +85,7 @@ class DQNAgent:
 
         target_f[np.arange(batch_size), action_minibatch] = target
 
-        self.model.fit(state_minibatch, target_f, epochs=batch_size, verbose=0)
+        self.model.fit(state_minibatch, target_f, epochs=1, verbose=0)
 
         # for state, action, reward, next_state, done in minibatch:
         #     target = reward # If done, then target = reward
@@ -98,6 +98,9 @@ class DQNAgent:
         #     self.model.fit(state, target_f, epochs=1, verbose=0)
 
         self.epsilon = max(self.final_epsilon, self.epsilon * self.epsilon_decay)
+
+        # self.epsilon = 1 - 1 / (1 + np.exp(-0.02 * (self.episode - 283)))
+        # self.episode += 1
 
     def load(self, name: str) -> None:
         self.model.load_weights(name)

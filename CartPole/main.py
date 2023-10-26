@@ -5,21 +5,22 @@ import matplotlib.pyplot as plt
 
 from agent import DQNAgent
 
-env = gym.make('CartPole-v1', render_mode='human')
+# env = gym.make('CartPole-v1', render_mode='human')
+env = gym.make('CartPole-v1')
 
 state_size = env.observation_space.shape[0]
 action_size = env.action_space.n
 
 # Hyperparameters
 
-n_episodes = 400
+n_episodes = 1_000
 batch_size = 64
 
 initial_epsilon = 1.0
 final_epsilon = 0.01
-epsilon_decay = 0.994
-gamma = 0.95
-learning_rate = 0.01
+epsilon_decay = 0.997
+gamma = 0.97
+learning_rate = 0.004
 
 agent = DQNAgent(state_size=state_size,
                  action_size=action_size,
@@ -39,8 +40,6 @@ def main():
         done = False
         score = 0
         while not done:
-            # env.render()
-            
             action = agent.act(state)
 
             next_state, reward, done, _, _ = env.step(action)
@@ -53,6 +52,9 @@ def main():
             state = next_state
 
             score += reward
+            if score > 550:
+                done = True
+
             if done:
                 print(f'Episode: {episode + 1}/{n_episodes}, score: {score}, epsilon: {agent.epsilon:.2f}')
                 scores.append(score)
@@ -66,7 +68,7 @@ def main():
     # Save the model
     agent.model.save('model.h5')
 
-    window_size = 15  # Adjust this to your desired window size
+    window_size = 100  # Adjust this to your desired window size
 
     # Calculate the moving average
     moving_average = np.convolve(scores, np.ones(window_size)/window_size, mode='valid')
