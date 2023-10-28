@@ -29,4 +29,8 @@ The observation is a ndarray with shape `(4,)` with the values corresponding to 
 
 Since the goal is to keep the pole upright for as long as possible, a reward of +1 for every step taken, including the termination step, is allotted. The threshold for rewards is 500 for v1 and 200 for v0.
 
+A penalty of 10 points is given if the pole falls over or the cart moves out of bounds before the end of the episode.
+
 ## Agent
+
+A Deep Q-Network (DQN) agent is used to solve the environment. The agent is based on a tensoflow implementation of a neural netowrk with a customizable size and number of hidden layers. The agent is implemented with a memory buffer to store the experiences of the agent and only one neural network is used to approximate the Q-values of the state-action pairs.
